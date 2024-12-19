@@ -13,19 +13,21 @@ def random_func():
 
 
 success_alert = send_slack_webhook_notification(
-    slack_webhook_conn_id="slack_webhook_connection", text="Task successful"
+    slack_webhook_conn_id="slack_webhook", text="Task successful"
 )
 failure_alert = send_slack_webhook_notification(
-    slack_webhook_conn_id="slack_webhook_connection", text="Task failed"
+    slack_webhook_conn_id="slack_webhook", text="Task failed"
 )
 
-with DAG(dag_id="DEMO_1") as dag:
+with DAG(
+    dag_id="DEMO_1",
+    on_success_callback= success_alert,
+    on_failure_callback= failure_alert
+) as dag:
 
     dummy_task = PythonOperator(
         task_id="dummy_task",
         python_callable=random_func,
-        on_success_callback=success_alert,
-        on_failure_callback=failure_alert,
     )
 
     dummy_task
